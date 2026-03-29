@@ -16,6 +16,16 @@ int main() {
             1.5,
             0.20;
     cout << l.rows() << endl;
-    cout << Misclosure(l, xhat).transpose() << endl;
+    VectorXd w = Misclosure(l, xhat);
+    MatrixXd A = AMatrix(l, xhat);
+    MatrixXd B = BMatrix(l, xhat);
+    double n  = l.rows();
+    double sigma = 0.005;
+    MatrixXd P = MatrixXd::Identity(2*n,2*n)*(1/(sigma*sigma));
+    MatrixXd M = B * P.inverse() * B.transpose();
+    MatrixXd N = A * P.inverse() * A.transpose();
+    MatrixXd u = M * w;
+
+
     return 0;
 }
