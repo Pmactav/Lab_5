@@ -56,63 +56,48 @@ void WriteMatrixToFile(const MatrixXd &Mat, const string& filename, unsigned int
     out.close();
 }
 
-MatrixXd Misclosure(const MatrixXd &l, const MatrixXd& xhat) {
-
-    MatrixXd w(l.rows(), 1);
-    double x0 = xhat(0,0);
-    double y0 = xhat(1,0);
-    double r  = xhat(2,0);
-
-    for (int i = 0; i < l.rows(); i++) {
-        double xi = l(i,0);
-        double yi = l(i,1);
-        w(i,0) = pow(xi - x0, 2)
-               + pow(yi - y0, 2)
-               - r*r;
+VectorXd Misclosure(const VectorXd &l, const VectorXd &xhat) {
+    int n = l.rows() / 2;
+    VectorXd w(n);
+    double x0 = xhat(0);
+    double y0 = xhat(1);
+    double r  = xhat(2);
+    for (int i = 0; i < n; i++) {
+        double xi = l(2*i);
+        double yi = l(2*i+1);
+        w(i) = pow(xi-x0,2)+pow(yi-y0,2)-r*r;
     }
     return w;
 }
 
-MatrixXd AMatrix(const MatrixXd &ctrlPts, const MatrixXd& x_hat) {
-    MatrixXd A(ctrlPts.rows(),2);
-    double x0 = x_hat(0,0);
-    double y0 = x_hat(1,0);
-    for (int i = 0; i < ctrlPts.rows(); i++) {
-        double deltaX = (x0 - ctrlPts(i, 0));
-        double deltaY = (y0 - ctrlPts(i, 1));
-        double denom = sqrt(deltaX * deltaX + deltaY * deltaY);
-        A(i, 0) = deltaX / denom;
-        A(i, 1) = deltaY / denom;
+MatrixXd AMatrix(const VectorXd &l, const VectorXd &x_hat) {
+    int n = l.rows() / 2;
+    MatrixXd A(n, 3);
+    double x0 = x_hat(0);
+    double y0 = x_hat(1);
+    double r0 = x_hat(2);
+    for (int i = 0; i < n; i++) {
+        double xi = l(2*i);
+        double yi = l(2*i+1);
+        A(i, 0) = -2*(xi - x0);
+        A(i, 1) = -2*(yi - y0);
+        A(i, 2) = -2*r0;
     }
     return A;
 }
 
-MatrixXd DesignMatrixAz(const MatrixXd &ctrlPts, const MatrixXd &x_hat) {
-    int n = ctrlPts.rows();
-    MatrixXd Aaz(n, 2);
-    double x0 = x_hat(0, 0);
-    double y0 = x_hat(1, 0);
+MatrixXd BMatrix(const VectorXd &l, const VectorXd &x_hat) {
+    int n = l.rows() / 2;
+    MatrixXd B = MatrixXd::Zero(n, 2*n);
+    double x0 = x_hat(0);
+    double y0 = x_hat(1);
     for (int i = 0; i < n; i++) {
-        double deltaX = (x0 - ctrlPts(i, 0));
-        double deltaY = (y0 - ctrlPts(i, 1));
-        double denom = deltaX * deltaX + deltaY * deltaY;
-        Aaz(i, 0) = -deltaY / denom;
-        Aaz(i, 1) = deltaX / denom;
+        double xi = l(2*i);
+        double yi = l(2*i+1);
+        B(i, 2*i)   =  -2*(xi - x0);
+        B(i, 2*i+1) =  -2*(yi - y0);
     }
-    return Aaz;
+    return B;
 }
 
-MatrixXd MisclosureAz(const MatrixXd &az, const MatrixXd &ctrlPts, const MatrixXd &x_hat) {
-    int n = ctrlPts.rows();
-    VectorXd Waz(n);
-    double x0 = x_hat(0, 0);
-    double y0 = x_hat(1, 0);
-    for (int i = 0; i < n; i++) {
-        double deltaX = (x0 - ctrlPts(i, 0));
-        double deltaY = (y0 - ctrlPts(i, 1));
-        double theta = atan2(-deltaX, -deltaY);
-        double wi = az(i, 0)-theta;
-        wi = wi - 2*M_PI*floor((wi + M_PI) / (2 * M_PI));
-        Waz(i)=wi;}
-    return Waz;
-}
+
