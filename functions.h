@@ -17,9 +17,9 @@ using namespace Eigen;
 
 MatrixXd ReadDatatoMatrix(const string& filename);
 void WriteMatrixToFile(const MatrixXd& Mat, const string& filename, unsigned int precision);
-MatrixXd Misclosure(const MatrixXd& l, const MatrixXd& xhat);
-MatrixXd AMatrix(const MatrixXd& l, const MatrixXd& x_hat);
-MatrixXd BMatrix(const MatrixXd& l, const MatrixXd& x_hat);
+VectorXd Misclosure(const VectorXd& l, const VectorXd& xhat);
+MatrixXd AMatrix(const VectorXd& l, const VectorXd& x_hat);
+MatrixXd BMatrix(const VectorXd& l, const VectorXd& x_hat);
 
 
 
