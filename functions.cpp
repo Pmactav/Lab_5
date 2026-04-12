@@ -99,5 +99,12 @@ MatrixXd BMatrix(const VectorXd &l, const VectorXd &x_hat) {
     }
     return B;
 }
-
+MatrixXd VectorToMatrix(VectorXd v, int n) {
+    MatrixXd m(n, 2);
+    for (int i = 0; i < n; i++) {
+        m(i, 0) = v(2*i);
+        m(i, 1) = v(2*i+1);
+    }
+    return m;
+}
 
