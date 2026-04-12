@@ -20,6 +20,7 @@ void WriteMatrixToFile(const MatrixXd& Mat, const string& filename, unsigned int
 VectorXd Misclosure(const VectorXd& l, const VectorXd& xhat);
 MatrixXd AMatrix(const VectorXd& l, const VectorXd& x_hat);
 MatrixXd BMatrix(const VectorXd& l, const VectorXd& x_hat);
+MatrixXd VectorToMatrix(VectorXd v, int n);
 
 
 
