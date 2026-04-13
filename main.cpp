@@ -50,12 +50,16 @@ int main() {
     WriteMatrixToFile(xhat, "../xhat.txt", 10);
     //rebuild outside of loop with final xhat
     VectorXd w = Misclosure(l, xhat);
+    cout << "w: " << w.rows() << "," << w.cols() << endl;
     MatrixXd A = AMatrix(l, xhat);
+    cout << "A: " << A.rows() << "," << A.cols() << endl;
     MatrixXd B = BMatrix(l, xhat);
+    cout << "B: " << B.rows() << "," << B.cols() << endl;
     MatrixXd M = B * Cl * B.transpose();
     MatrixXd M_inv = M.inverse();
     VectorXd k = M_inv*(A*delta+w);
     VectorXd v_hat = -Cl*B.transpose()*k;
+    WriteMatrixToFile(v_hat, "../vhat.txt", 10);
     MatrixXd N = A.transpose() * M_inv * A;
     MatrixXd u = A.transpose() * M_inv * w;
     VectorXd l_hat = l + v_hat;
