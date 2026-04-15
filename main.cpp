@@ -30,7 +30,7 @@ int main() {
     double sigma = 0.005;
     double sigma0_sq = sigma*sigma;
     MatrixXd Cl = MatrixXd::Identity(2*n,2*n)*sigma0_sq;
-    MatrixXd P = Cl.inverse();
+    MatrixXd P = MatrixXd::Identity(2*n,2*n);//apriori scales P to I, as sigma0_sq*1/sigma0_sq = I
     //Begin iteration
     VectorXd delta;
     int iter = 0;
@@ -47,15 +47,20 @@ int main() {
         iter++;
     } while (delta.norm() > 1e-10 && iter < 20);
     cout << "Converged in " << iter << " iterations" << endl;
+    cout << "delta: " << delta.norm() << endl;
     WriteMatrixToFile(xhat, "../xhat.txt", 10);
     //rebuild outside of loop with final xhat
     VectorXd w = Misclosure(l, xhat);
+    cout << "w: " << w.rows() << "," << w.cols() << endl;
     MatrixXd A = AMatrix(l, xhat);
+    cout << "A: " << A.rows() << "," << A.cols() << endl;
     MatrixXd B = BMatrix(l, xhat);
+    cout << "B: " << B.rows() << "," << B.cols() << endl;
     MatrixXd M = B * Cl * B.transpose();
     MatrixXd M_inv = M.inverse();
     VectorXd k = M_inv*(A*delta+w);
     VectorXd v_hat = -Cl*B.transpose()*k;
+    WriteMatrixToFile(v_hat, "../vhat.txt", 10);
     MatrixXd N = A.transpose() * M_inv * A;
     MatrixXd u = A.transpose() * M_inv * w;
     VectorXd l_hat = l + v_hat;
@@ -66,6 +71,7 @@ int main() {
     MatrixXd C_xhat = sigma0_square_hat*N_inv;
     MatrixXd C_vhat = (Cl*B.transpose()*M_inv*B*Cl)-(Cl*B.transpose()*M_inv*A* N.inverse()*A.transpose()*M_inv*B*Cl);
     MatrixXd C_lhat = Cl-C_vhat;
+    cout << "sigma0_sq_hat: " << sigma0_square_hat << endl;
     cout << "sigma0_hat:    " << sqrt(sigma0_square_hat) << endl;
     WriteMatrixToFile(C_xhat.diagonal().cwiseAbs().cwiseSqrt(), "../C_xhatdiag.txt", 10);
     WriteMatrixToFile(C_vhat.diagonal().cwiseAbs().cwiseSqrt(), "../C_vhatdiag.txt", 10);
@@ -84,5 +90,7 @@ int main() {
     WriteMatrixToFile(lhat_coords, "../lhat_coords.txt", 10);
     MatrixXd vhat_coords  = VectorToMatrix(v_hat, n);
     WriteMatrixToFile(vhat_coords, "../vhat_coords.txt", 10);
+    MatrixXd Cl_coords  = VectorToMatrix(C_lhat.diagonal().cwiseAbs().cwiseSqrt(), n);
+    WriteMatrixToFile(Cl_coords, "../Cl_coords.txt", 10);
     return 0;
 }

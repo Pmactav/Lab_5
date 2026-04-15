@@ -79,8 +79,8 @@ MatrixXd AMatrix(const VectorXd &l, const VectorXd &x_hat) {
     for (int i = 0; i < n; i++) {
         double xi = l(2*i);
         double yi = l(2*i+1);
-        A(i, 0) = -2*(xi - x0);
-        A(i, 1) = -2*(yi - y0);
+        A(i, 0) = 2*(x0 - xi);
+        A(i, 1) = 2*(y0 - yi);
         A(i, 2) = -2*r0;
     }
     return A;
@@ -94,8 +94,8 @@ MatrixXd BMatrix(const VectorXd &l, const VectorXd &x_hat) {
     for (int i = 0; i < n; i++) {
         double xi = l(2*i);
         double yi = l(2*i+1);
-        B(i, 2*i)   =  -2*(xi - x0);
-        B(i, 2*i+1) =  -2*(yi - y0);
+        B(i, 2*i)   =  2*(x0 - xi);
+        B(i, 2*i+1) =  2*(y0 - yi);
     }
     return B;
 }
